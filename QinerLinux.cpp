@@ -8,11 +8,11 @@ out of or in connection with the software or the use or other dealings in the so
 */
 
 #define AVX512 0
-#define NUMBER_OF_NEURONS 20000
+#define NUMBER_OF_NEURONS 262144
 #define PORT 21841
 #define SOLUTION_THRESHOLD 29
 #define VERSION_A 1
-#define VERSION_B 84
+#define VERSION_B 85
 #define VERSION_C 0
 
 #if defined(_WIN32) || defined(_WIN64)
@@ -1369,8 +1369,8 @@ void *miningThreadProc(void *ptr)
 #endif
 {
     unsigned char nonce[32];
-    unsigned int neuronLinks[NUMBER_OF_NEURONS][2];
-    unsigned char neuronValues[NUMBER_OF_NEURONS];
+    auto neuronLinks = new unsigned int[NUMBER_OF_NEURONS][2];
+    auto neuronValues = new unsigned char[NUMBER_OF_NEURONS];
     while (!state)
     {
         if (EQUAL(*((__m256i*)minerPublicKey), ZERO))
@@ -1525,7 +1525,7 @@ int main(int argc, char* argv[])
 
 		#endif
 
-        randomSeed[0] = 19;
+        randomSeed[0] = 159;
         randomSeed[1] = 87;
         randomSeed[2] = 115;
         randomSeed[3] = 131;
