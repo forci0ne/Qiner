@@ -1369,8 +1369,8 @@ void *miningThreadProc(void *ptr)
 #endif
 {
     unsigned char nonce[32];
-    auto neuronLinks = new unsigned int[NUMBER_OF_NEURONS][2];
-    auto neuronValues = new unsigned char[NUMBER_OF_NEURONS];
+    unsigned int neuronLinks[NUMBER_OF_NEURONS][2];
+    unsigned char neuronValues[NUMBER_OF_NEURONS];
     while (!state)
     {
         if (EQUAL(*((__m256i*)minerPublicKey), ZERO))
