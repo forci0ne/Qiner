@@ -10,9 +10,9 @@ out of or in connection with the software or the use or other dealings in the so
 #define AVX512 0
 #define NUMBER_OF_NEURONS 262144
 #define PORT 21841
-#define SOLUTION_THRESHOLD 29
+#define SOLUTION_THRESHOLD 28
 #define VERSION_A 1
-#define VERSION_B 85
+#define VERSION_B 87
 #define VERSION_C 0
 
 #if defined(_WIN32) || defined(_WIN64)
@@ -1528,7 +1528,7 @@ int main(int argc, char* argv[])
         randomSeed[0] = 159;
         randomSeed[1] = 87;
         randomSeed[2] = 115;
-        randomSeed[3] = 131;
+        randomSeed[3] = 132;
         randomSeed[4] = 132;
         randomSeed[5] = 86;
         randomSeed[6] = 13;
