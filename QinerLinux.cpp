@@ -1,47 +1,47 @@
 /*
-The software is provided "as is," without warranty of any kind, express or implied,
-including but not limited to the warranties of merchantability,
-fitness for a particular purpose and noninfringement.
-In no event shall the authors or copyright holders be liable for any claim,
-damages or other liability, whether in an action of contract, tort or otherwise, arising from,
+The software is provided "as is," without warranty of any kind, express or implied, 
+including but not limited to the warranties of merchantability, 
+fitness for a particular purpose and noninfringement. 
+In no event shall the authors or copyright holders be liable for any claim, 
+damages or other liability, whether in an action of contract, tort or otherwise, arising from, 
 out of or in connection with the software or the use or other dealings in the software."
 */
 
 #define AVX512 0
 #define MAX_NUMBER_OF_THREADS 64
-#define NUMBER_OF_NEURONS 262144
+#define NUMBER_OF_NEURONS 1048576
 #define PORT 21841
-#define SOLUTION_THRESHOLD 28
+#define SOLUTION_THRESHOLD 27
 #define VERSION_A 1
-#define VERSION_B 87
+#define VERSION_B 90
 #define VERSION_C 0
 
 #if defined(_WIN32) || defined(_WIN64)
-#include <intrin.h>
-#include <stdio.h>
-#include <string.h>
-#include <winsock2.h>
-#pragma comment (lib, "ws2_32.lib")
+	#include <intrin.h>
+	#include <stdio.h>
+	#include <string.h>
+	#include <winsock2.h>
+	#pragma comment (lib, "ws2_32.lib")
 #else
-#include <cstring>
-#include <stdio.h>
-#include <immintrin.h>
-#include <pthread.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <errno.h>
-#include <unistd.h>
-#include <sys/time.h>
-#include <signal.h>
-#include <chrono>
-#include <thread>
+	#include <cstring>
+	#include <stdio.h>
+	#include <immintrin.h>
+	#include <pthread.h>
+	#include <sys/socket.h>
+	#include <arpa/inet.h>
+	#include <errno.h>
+	#include <unistd.h>
+	#include <sys/time.h>
+	#include <signal.h>
+	#include <chrono>
+	#include <thread>
 #endif
 
 #if not (defined(_WIN32) || defined(_WIN64))
-static __inline__ char _InterlockedCompareExchange8(char volatile* _Destination, char _Exchange, char _Comparand)
+static __inline__ char _InterlockedCompareExchange8(char volatile *_Destination, char _Exchange, char _Comparand) 
 {
-    __atomic_compare_exchange(_Destination, &_Comparand, &_Exchange, 0, __ATOMIC_SEQ_CST, __ATOMIC_ACQUIRE);
-    return _Comparand;
+  __atomic_compare_exchange(_Destination, &_Comparand, &_Exchange, 0, __ATOMIC_SEQ_CST, __ATOMIC_ACQUIRE);
+  return _Comparand;
 }
 #endif
 
@@ -57,10 +57,10 @@ static __inline__ char _InterlockedCompareExchange8(char volatile* _Destination,
 
 // for intel based mac. RELEASE_X86_64 x86_64 . tested on xnu-7195
 #if defined(__APPLE__) && defined(__MACH__)
-void  explicit_bzero(void* b, size_t len)
-{
-    memset_s(b, len, 0, len);
-}
+ void  explicit_bzero(void *b, size_t len)
+ {
+     memset_s(b, len, 0, len);
+ }
 #endif
 
 #if AVX512
@@ -1276,7 +1276,7 @@ static void KangarooTwelve(unsigned char* input, unsigned int inputByteLen, unsi
 
 void random(unsigned char* publicKey, unsigned char* nonce, unsigned char* output, unsigned int outputSize)
 {
-    unsigned char state[200] __attribute__((aligned(32)));
+    unsigned char state[200] __attribute__ ((aligned(32)));
     *((__m256i*) & state[0]) = *((__m256i*)publicKey);
     *((__m256i*) & state[32]) = *((__m256i*)nonce);
     memset(&state[64], 0, sizeof(state) - 64);
@@ -1321,9 +1321,9 @@ const static __m256i ZERO = _mm256_setzero_si256();
 
 static volatile char state = 0;
 
-static unsigned long long miningData[65536] __attribute__((aligned(32)));
-static unsigned char minerPublicKey[32] __attribute__((aligned(32))) = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-static unsigned char nonce[32] __attribute__((aligned(32))) = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+static unsigned long long miningData[65536] __attribute__ ((aligned(32)));
+static unsigned char minerPublicKey[32] __attribute__ ((aligned(32))) = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+static unsigned char nonce[32] __attribute__ ((aligned(32))) = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 static volatile long long numberOfMiningIterations = 0;
 static volatile long long numberOfFoundSolutions = 0;
 
@@ -1339,7 +1339,7 @@ BOOL WINAPI ctrlCHandlerRoutine(DWORD dwCtrlType)
     return TRUE;
 }
 #else
-void ctrlCHandlerRoutine(int sig)
+void ctrlCHandlerRoutine(int sig)	
 {
     state = 1;
 }
@@ -1350,7 +1350,7 @@ void mySleep(int sleepMs)
 #if defined(_WIN32) || defined(_WIN64)
     Sleep(sleepMs);
 #else
-    std::this_thread::sleep_for(std::chrono::milliseconds(sleepMs));
+	std::this_thread::sleep_for(std::chrono::milliseconds(sleepMs));
 #endif
 }
 
@@ -1360,7 +1360,7 @@ uint64_t getTimeMs(void)
     struct timeval tv;
 
     gettimeofday(&tv, 0);
-    return uint64_t(tv.tv_sec) * 1000 + tv.tv_usec / 1000;
+    return uint64_t( tv.tv_sec ) * 1000 + tv.tv_usec / 1000;
 }
 #endif
 
@@ -1379,7 +1379,7 @@ static uint64_t GetTickCountMs()
 #if defined(_WIN32) || defined(_WIN64)
 DWORD WINAPI miningThreadProc(LPVOID)
 #else
-void* miningThreadProc(void* ptr)
+void *miningThreadProc(void *ptr)
 #endif
 {
     ACQUIRE(threadIndexLock);
@@ -1396,10 +1396,10 @@ void* miningThreadProc(void* ptr)
         }
         else
         {
-            _rdrand64_step((unsigned long long*) & nonce[0]);
-            _rdrand64_step((unsigned long long*) & nonce[8]);
-            _rdrand64_step((unsigned long long*) & nonce[16]);
-            _rdrand64_step((unsigned long long*) & nonce[24]);
+            _rdrand64_step((unsigned long long*)&nonce[0]);
+            _rdrand64_step((unsigned long long*)&nonce[8]);
+            _rdrand64_step((unsigned long long*)&nonce[16]);
+            _rdrand64_step((unsigned long long*)&nonce[24]);
             random(minerPublicKey, nonce, (unsigned char*)neuronLinks[threadIndex], sizeof(neuronLinks[threadIndex]));
             for (unsigned int i = 0; i < NUMBER_OF_NEURONS; i++)
             {
@@ -1459,25 +1459,25 @@ void* miningThreadProc(void* ptr)
                     mySleep(1);
                 }
                 *((__m256i*)::nonce) = *((__m256i*)nonce);
-#if defined(_WIN32) || defined(_WIN64)
+				#if defined(_WIN32) || defined(_WIN64)
                 _InterlockedIncrement64(&numberOfFoundSolutions);
-#else
-                __sync_fetch_and_add(&numberOfFoundSolutions, 1);
-#endif
+				#else
+				__sync_fetch_and_add(&numberOfFoundSolutions, 1);
+				#endif
             }
-#if defined(_WIN32) || defined(_WIN64)
+			#if defined(_WIN32) || defined(_WIN64)
             _InterlockedIncrement64(&numberOfMiningIterations);
-#else
-            __sync_fetch_and_add(&numberOfMiningIterations, 1);
-#endif
+			#else
+			__sync_fetch_and_add(&numberOfMiningIterations, 1);
+			#endif
         }
     }
 
-#if defined(_WIN32) || defined(_WIN64)
+	#if defined(_WIN32) || defined(_WIN64)
     return 0;
-#else
-    return NULL;
-#endif
+	#else
+	return NULL;
+	#endif
 }
 
 
@@ -1492,7 +1492,7 @@ bool sendData(int serverSocket, char* buffer, unsigned int size)
         int numberOfBytes;
         if ((numberOfBytes = send(serverSocket, buffer, size, 0)) <= 0)
         {
-            strerror(errno);
+			strerror(errno);
             return false;
         }
         buffer += numberOfBytes;
@@ -1510,16 +1510,16 @@ bool receiveData(int serverSocket, char* buffer, unsigned int size)
 
 #if defined(_WIN32) || defined(_WIN64)	
     const unsigned long long beginningTime = GetTickCount64();
-    while (size && GetTickCount64() - beginningTime <= 2000)
+    while (size && GetTickCount64() - beginningTime <= 2000)	
 #else
-    const unsigned long long beginningTime = GetTickCountMs();
-    while (size && GetTickCountMs() - beginningTime <= 2000)
+	const unsigned long long beginningTime = GetTickCountMs();
+	while (size && GetTickCountMs() - beginningTime <= 2000)	
 #endif
     {
         int numberOfBytes;
         if ((numberOfBytes = recv(serverSocket, buffer, size, 0)) <= 0)
         {
-            strerror(errno);
+			strerror(errno);
             return false;
         }
         buffer += numberOfBytes;
@@ -1541,150 +1541,150 @@ int main(int argc, char* argv[])
     }
     else
     {
-        unsigned char randomSeed[32] __attribute__((aligned(32)));
-#if defined(_WIN32) || defined(_WIN64)
+        unsigned char randomSeed[32] __attribute__ ((aligned(32)));
+		#if defined(_WIN32) || defined(_WIN64)
         ZeroMemory(randomSeed, 32);
-#else
-        explicit_bzero((char*)&randomSeed, 32);
+		#else
+		explicit_bzero((char *) &randomSeed, 32);
 
-#endif
+		#endif
 
         randomSeed[0] = 159;
         randomSeed[1] = 87;
         randomSeed[2] = 115;
-        randomSeed[3] = 132;
-        randomSeed[4] = 132;
+        randomSeed[3] = 131;
+        randomSeed[4] = 133;
         randomSeed[5] = 86;
         randomSeed[6] = 13;
-        randomSeed[7] = 101;
+        randomSeed[7] = 106;
 
         random(randomSeed, randomSeed, (unsigned char*)miningData, sizeof(miningData));
 
-#if defined(_WIN32) || defined(_WIN64)
+		#if defined(_WIN32) || defined(_WIN64)
         SetConsoleCtrlHandler(ctrlCHandlerRoutine, TRUE);
-#else
-        signal(SIGINT, ctrlCHandlerRoutine);
-#endif
-
-        unsigned int numberOfThreads = 1;
+		#else
+		signal(SIGINT, ctrlCHandlerRoutine);
+		#endif
+		
+        unsigned int numberOfThreads=1;
         if (argc < 3)
         {
-#if defined(_WIN32) || defined(_WIN64)
+			#if defined(_WIN32) || defined(_WIN64)
             SYSTEM_INFO systemInfo;
             GetSystemInfo(&systemInfo);
             numberOfThreads = systemInfo.dwNumberOfProcessors;
-#endif
+			#endif
         }
         else
         {
             numberOfThreads = atoi(argv[2]);
         }
         printf("%d threads are used.\n", numberOfThreads);
-#if !defined(_WIN32) && !defined(_WIN64)
-        pthread_t* my_thread = new pthread_t[numberOfThreads];
-#endif
+		#if !defined(_WIN32) && !defined(_WIN64)
+		pthread_t *my_thread = new pthread_t[numberOfThreads];
+		#endif
         for (unsigned int i = numberOfThreads; i-- > 0; )
         {
 #if defined(_WIN32) || defined(_WIN64)
             CreateThread(NULL, 0, miningThreadProc, NULL, 0, NULL);
 #else
-            if (pthread_create(&my_thread[i], NULL, miningThreadProc, NULL) != 0) {
-                perror("Failed to create thread\n");
-                return 1;
-            }
+			if (pthread_create(&my_thread[i], NULL, miningThreadProc, NULL) != 0) {
+				perror("Failed to create thread\n");
+				return 1;				
+			}
 
 #endif
         }
+		
 
-
-        // Windows Sockets initialization, not needed on Linux
-#if defined(_WIN32) || defined(_WIN64)
+		// Windows Sockets initialization, not needed on Linux
+		#if defined(_WIN32) || defined(_WIN64)
         WSADATA wsaData;
         WSAStartup(MAKEWORD(2, 2), &wsaData);
-#else
-// When threads are launched, no need to keep pointer to heap
-        delete[] my_thread;
-#endif
+		#else
+		// When threads are launched, no need to keep pointer to heap
+		delete[] my_thread;
+		#endif
 
-#if defined(_WIN32) || defined(_WIN64)
+		#if defined(_WIN32) || defined(_WIN64)
         unsigned long long timestamp = GetTickCount64();
-#else
-        unsigned long long timestamp = GetTickCountMs();
-        unsigned long long latestKeyTimestamp;
-#endif
-
+		#else
+		unsigned long long timestamp = GetTickCountMs();
+    unsigned long long latestKeyTimestamp = timestamp;
+		#endif
+		
         long long prevNumberOfMiningIterations = 0;
         while (!state)
         {
             if (EQUAL(*((__m256i*)minerPublicKey), ZERO) || !EQUAL(*((__m256i*)nonce), ZERO) || GetTickCountMs() - latestKeyTimestamp >= 60 * 1000)
             {
-#if defined(_WIN32) || defined(_WIN64)
+				#if defined(_WIN32) || defined(_WIN64)
                 SOCKET serverSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
                 if (serverSocket == INVALID_SOCKET)
                 {
                     printf("Failed to create a socket (%d)!\n", WSAGetLastError());
                 }
-#else
-                int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
-                struct timeval tv;
-                tv.tv_sec = 5;
-                tv.tv_usec = 0;
-                setsockopt(serverSocket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof tv);
-                if (serverSocket < 0)
+				#else
+				int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
+				struct timeval tv;
+				tv.tv_sec = 5;
+				tv.tv_usec = 0;
+				setsockopt(serverSocket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof tv);
+				if (serverSocket < 0)
+				{
+					printf("Failed to create a socket!\n");
+				}
+				
+				#endif
+				else
+
                 {
-                    printf("Failed to create a socket!\n");
-                }
+					sockaddr_in addr;
 
-#endif
-                else
-
-                {
-                    sockaddr_in addr;
-
-#if defined(_WIN32) || defined(_WIN64)
+					#if defined(_WIN32) || defined(_WIN64)
                     ZeroMemory(&addr, sizeof(addr));
-#else	
-                    explicit_bzero((char*)&addr, sizeof(addr));
-#endif
+					#else	
+					explicit_bzero((char *) &addr, sizeof(addr));						
+					#endif
                     addr.sin_family = AF_INET;
                     addr.sin_port = htons(PORT);
+					
+					#if defined(_WIN32) || defined(_WIN64)
+                    sscanf(argv[1], "%d.%d.%d.%d", 
+					&addr.sin_addr.S_un.S_un_b.s_b1, 
+					&addr.sin_addr.S_un.S_un_b.s_b2, 
+					&addr.sin_addr.S_un.S_un_b.s_b3, 
+					&addr.sin_addr.S_un.S_un_b.s_b4);
+					#else
+					if(inet_pton(AF_INET, argv[1], &addr.sin_addr) <= 0)
+					{
+						printf("Error translating command line ip address to usable one.");
+					}
+					
+					#endif
 
-#if defined(_WIN32) || defined(_WIN64)
-                    sscanf(argv[1], "%d.%d.%d.%d",
-                        &addr.sin_addr.S_un.S_un_b.s_b1,
-                        &addr.sin_addr.S_un.S_un_b.s_b2,
-                        &addr.sin_addr.S_un.S_un_b.s_b3,
-                        &addr.sin_addr.S_un.S_un_b.s_b4);
-#else
-                    if (inet_pton(AF_INET, argv[1], &addr.sin_addr) <= 0)
+					#if defined(_WIN32) || defined(_WIN64)
+					if (connect(serverSocket, (const sockaddr*)&addr, sizeof(addr)))
+					#else
+					if (connect(serverSocket, (const sockaddr*)&addr, sizeof(addr)) < 0)	
+					#endif
                     {
-                        printf("Error translating command line ip address to usable one.");
-                    }
-
-#endif
-
-#if defined(_WIN32) || defined(_WIN64)
-                    if (connect(serverSocket, (const sockaddr*)&addr, sizeof(addr)))
-#else
-                    if (connect(serverSocket, (const sockaddr*)&addr, sizeof(addr)) < 0)
-#endif
-                    {
-#if defined(_WIN32) || defined(_WIN64)
+						#if defined(_WIN32) || defined(_WIN64)
                         printf("Failed to connect to %d.%d.%d.%d (%d)!\n", addr.sin_addr.S_un.S_un_b.s_b1, addr.sin_addr.S_un.S_un_b.s_b2, addr.sin_addr.S_un.S_un_b.s_b3, addr.sin_addr.S_un.S_un_b.s_b4, WSAGetLastError());
-#else
-                        printf("Failed to connect, done here.\n");
-#endif
-                    }
+						#else
+						printf("Failed to connect, done here.\n");
+						#endif
+					}
                     else
                     {
-#if defined(_WIN32) || defined(_WIN64)
-                        DWORD value = 2000;
-#else
-                        unsigned int value = 2000;
-#endif
+						#if defined(_WIN32) || defined(_WIN64)
+						DWORD value = 2000;
+						#else
+						unsigned int value = 2000;
+						#endif
                         setsockopt(serverSocket, SOL_SOCKET, SO_SNDTIMEO, (const char*)&value, sizeof(value));
-                        setsockopt(serverSocket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&value, sizeof(value));
-
+                        setsockopt(serverSocket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&value, sizeof(value));   
+						
                         if (EQUAL(*((__m256i*)nonce), ZERO))
                         {
                             struct
@@ -1701,8 +1701,8 @@ int main(int argc, char* argv[])
                                 } packet;
 
                                 if (receiveData(serverSocket, (char*)&packet, 40) && packet.header.type == RESPOND_MINER_PUBLIC_KEY)
-                                {
-                                    *((__m256i*)minerPublicKey) = _mm256_loadu_si256((__m256i*) packet.payload.minerPublicKey);
+                                {									
+                                    *((__m256i*)minerPublicKey) = _mm256_loadu_si256((__m256i *) packet.payload.minerPublicKey);
                                     latestKeyTimestamp = GetTickCountMs();
                                 }
                             }
@@ -1726,7 +1726,7 @@ int main(int argc, char* argv[])
 #if defined(_WIN32) || defined(_WIN64)
                     closesocket(serverSocket);
 #else
-                    close(serverSocket);
+					close(serverSocket);
 #endif
                 }
             }
@@ -1734,12 +1734,12 @@ int main(int argc, char* argv[])
             mySleep(1000);
 
 
-#if defined(_WIN32) || defined(_WIN64)
+			#if defined(_WIN32) || defined(_WIN64)
             unsigned long long delta = GetTickCount64() - timestamp;
-#else
-            unsigned long long delta = GetTickCountMs() - timestamp;
-#endif
-
+			#else
+			unsigned long long delta = GetTickCountMs() - timestamp;
+			#endif
+			
 
             if (delta >= 1000)
             {
@@ -1747,7 +1747,7 @@ int main(int argc, char* argv[])
 
                 for (int i = 0; i < 4; i++)
                 {
-                    unsigned long long publicKeyFragment = *((unsigned long long*) & minerPublicKey[i << 3]);
+                    unsigned long long publicKeyFragment = *((unsigned long long*)&minerPublicKey[i << 3]);
                     for (int j = 0; j < 14; j++)
                     {
                         id[i * 14 + j] = publicKeyFragment % 26 + 'A';
@@ -1764,31 +1764,31 @@ int main(int argc, char* argv[])
                 }
                 id[60] = 0;
 
-#if defined(_WIN32) || defined(_WIN64)
-                SYSTEMTIME systemTime;
+				#if defined(_WIN32) || defined(_WIN64)
+				SYSTEMTIME systemTime;
                 GetSystemTime(&systemTime);
-                printf("|   %d-%d%d-%d%d %d%d:%d%d:%d%d   |   %lli it/s   |   %lli solutions   |   %.10s...   |\n", systemTime.wYear, systemTime.wMonth / 10, systemTime.wMonth % 10, systemTime.wDay / 10, systemTime.wDay % 10, systemTime.wHour / 10, systemTime.wHour % 10, systemTime.wMinute / 10, systemTime.wMinute % 10, systemTime.wSecond / 10, systemTime.wSecond % 10, (numberOfMiningIterations - prevNumberOfMiningIterations) * 1000 / delta, numberOfFoundSolutions, id);
-#else
-                time_t rawTime = time(0);
-                tm* systemTime = localtime(&rawTime);
-
-                printf("|   %d-%d%d-%d%d %d%d:%d%d:%d%d   |   %lli it/s   |   %lli solutions   |   %.6s...%s   |\n", systemTime->tm_year + 1900, ((int)systemTime->tm_mon + 1) / 10, ((int)systemTime->tm_mon + 1) % 10, (int)systemTime->tm_mday / 10, (int)systemTime->tm_mday % 10, (int)systemTime->tm_hour / 10, (int)systemTime->tm_hour % 10, (int)systemTime->tm_min / 10, (int)systemTime->tm_min % 10, (int)systemTime->tm_sec / 10, (int)systemTime->tm_sec % 10, (numberOfMiningIterations - prevNumberOfMiningIterations) * 1000 / delta, numberOfFoundSolutions, id, id + strlen((const char*)id) - 6);
-#endif
-
-                prevNumberOfMiningIterations = numberOfMiningIterations;
-#if defined(_WIN32) || defined(_WIN64)
+				printf("|   %d-%d%d-%d%d %d%d:%d%d:%d%d   |   %lli it/s   |   %lli solutions   |   %.10s...   |\n", systemTime.wYear, systemTime.wMonth / 10, systemTime.wMonth % 10, systemTime.wDay / 10, systemTime.wDay % 10, systemTime.wHour / 10, systemTime.wHour % 10, systemTime.wMinute / 10, systemTime.wMinute % 10, systemTime.wSecond / 10, systemTime.wSecond % 10, (numberOfMiningIterations - prevNumberOfMiningIterations) * 1000 / delta, numberOfFoundSolutions, id);				
+				#else
+				time_t rawTime = time(0);
+				tm *systemTime = localtime(&rawTime);
+	
+				printf("|   %d-%d%d-%d%d %d%d:%d%d:%d%d   |   %lli it/s   |   %lli solutions   |   %.6s...%s   |\n", systemTime->tm_year + 1900, ((int)systemTime->tm_mon+1) / 10, ((int)systemTime->tm_mon+1) % 10, (int)systemTime->tm_mday / 10, (int)systemTime->tm_mday % 10, (int)systemTime->tm_hour / 10, (int)systemTime->tm_hour % 10, (int)systemTime->tm_min / 10, (int)systemTime->tm_min % 10, (int)systemTime->tm_sec / 10, (int)systemTime->tm_sec % 10, (numberOfMiningIterations - prevNumberOfMiningIterations) * 1000 / delta, numberOfFoundSolutions, id, id + strlen((const char*)id) - 6);	
+                #endif
+				
+				prevNumberOfMiningIterations = numberOfMiningIterations;
+				#if defined(_WIN32) || defined(_WIN64)
                 timestamp = GetTickCount64();
-#else
-                timestamp = GetTickCountMs();
-#endif
+				#else
+				timestamp = GetTickCountMs();
+				#endif
             }
         }
-#if defined(_WIN32) || defined(_WIN64)
+		#if defined(_WIN32) || defined(_WIN64)
         WSACleanup();
-#endif
+		#endif
     }
 
     printf("Qiner %d.%d.%d is shut down.\n", VERSION_A, VERSION_B, VERSION_C);
-
+    
     return 0;
 }
