@@ -11,9 +11,9 @@ out of or in connection with the software or the use or other dealings in the so
 #define MAX_NUMBER_OF_THREADS 64
 #define NUMBER_OF_NEURONS 1048576
 #define PORT 21841
-#define SOLUTION_THRESHOLD 25
+#define SOLUTION_THRESHOLD 24
 #define VERSION_A 1
-#define VERSION_B 96
+#define VERSION_B 101
 #define VERSION_C 0
 
 #if defined(_WIN32) || defined(_WIN64)
@@ -1493,7 +1493,7 @@ int main(int argc, char *argv[])
         unsigned char randomSeed[32] __attribute__((aligned(32)));
         explicit_bzero((char *)&randomSeed, 32);
 
-        randomSeed[0] = 113;
+        randomSeed[0] = 114;
         randomSeed[1] = 187;
         randomSeed[2] = 115;
         randomSeed[3] = 131;
